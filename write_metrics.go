@@ -14,11 +14,10 @@ import (
 
 	"github.com/demdxx/gocast"
 	"github.com/fatih/structs"
+	"github.com/hasansino/metrics"
 	"github.com/modern-go/reflect2"
 	prometheusModels "github.com/prometheus/client_model/go"
 	"github.com/prometheus/common/expfmt"
-
-	"github.com/trafficstars/metrics"
 )
 
 const (
@@ -143,7 +142,7 @@ type registryAggregativeMetric interface {
 
 // writeRegistryAggregativeMetric is just a helper function for writeRegistryMetricsPrometheus
 //
-// writes an aggregative registry metric from package (see "github.com/trafficstars/metrics") via encoder
+// writes an aggregative registry metric from package (see "github.com/hasansino/metrics") via encoder
 //
 // aggregativeMetrics -- is an output map
 func addRegistryAggregativeMetricToMap(
@@ -154,7 +153,7 @@ func addRegistryAggregativeMetricToMap(
 ) {
 
 	// Aggregative metrics has multiple aggregation periods (see `SetAggregationPeriods` of
-	// "github.com/trafficstars/metrics"). Here we get a slice of values per aggregation period.
+	// "github.com/hasansino/metrics"). Here we get a slice of values per aggregation period.
 	values := metric.GetValuePointers()
 
 	// Just not to duplicate the same code a lot of times we create this temporary function here (it will be used below)
@@ -220,7 +219,7 @@ func addRegistryAggregativeMetricToMap(
 
 // encodeMetrics is just a helper function for writeRegistryMetricsPrometheus
 //
-// writes non-aggregative registry metrics (see "github.com/trafficstars/metrics") via encoder
+// writes non-aggregative registry metrics (see "github.com/hasansino/metrics") via encoder
 func encodeMetrics(encoder encoder, prefix string, metrics map[string][]*prometheusModels.Metric, metricType prometheusModels.MetricType) {
 	for key, subMetrics := range metrics {
 		logger.IfError(encoder.Encode(&prometheusModels.MetricFamily{
@@ -233,9 +232,9 @@ func encodeMetrics(encoder encoder, prefix string, metrics map[string][]*prometh
 
 // writeRegistryMetricsPrometheus is just a helper function for writeMetricsPrometheus
 //
-// writes registry metrics (see "github.com/trafficstars/metrics") via encoder
+// writes registry metrics (see "github.com/hasansino/metrics") via encoder
 func writeRegistryMetricsPrometheus(encoder encoder, prefix string, v []metrics.Metric) {
-	// A slice of registry metrics (likely received via `List` of "github.com/trafficstars/metrics")
+	// A slice of registry metrics (likely received via `List` of "github.com/hasansino/metrics")
 
 	countMetrics := map[string][]*prometheusModels.Metric{}
 	gaugeMetrics := map[string][]*prometheusModels.Metric{}
@@ -248,7 +247,7 @@ func writeRegistryMetricsPrometheus(encoder encoder, prefix string, v []metrics.
 	for _, metricI := range v {
 		key := metricI.GetName()
 
-		// Prepare labels (it's called "tags" in package "github.com/trafficstars/metrics")
+		// Prepare labels (it's called "tags" in package "github.com/hasansino/metrics")
 
 		var labels []*prometheusModels.LabelPair
 		tags := metricI.GetTags()
@@ -327,7 +326,7 @@ func writeRegistryMetricsPrometheus(encoder encoder, prefix string, v []metrics.
 func writeMetricsPrometheus(encoder encoder, prefix string, m map[string]interface{}) {
 	for k, vI := range m {
 		if registryMetric, ok := vI.(metrics.Metric); ok {
-			// The only way to work with registry metrics ("github.com/trafficstars/metrics") is pass them as a slice,
+			// The only way to work with registry metrics ("github.com/hasansino/metrics") is pass them as a slice,
 			// ATM. Sorry.
 			_ = registryMetric
 			logger.Error(errors.New("registry metrics outside of a slice are not implemented, yet"))

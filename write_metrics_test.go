@@ -6,10 +6,10 @@ import (
 	"testing"
 	"unicode/utf8"
 
+	"github.com/hasansino/metrics"
 	prometheusModels "github.com/prometheus/client_model/go"
 	"github.com/prometheus/common/expfmt"
 	"github.com/stretchr/testify/assert"
-	"github.com/trafficstars/metrics"
 )
 
 type testPrometheusEncoder struct {
